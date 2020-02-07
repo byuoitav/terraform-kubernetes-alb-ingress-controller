@@ -205,6 +205,11 @@ resource "kubernetes_deployment" "external_dns" {
             secret_name = kubernetes_service_account.external_dns.default_secret_name
           }
         }
+
+        // so that ExternalDNS can read the serviceaccount token
+        security_context {
+          fs_group = 65534
+        }
       }
     }
   }
