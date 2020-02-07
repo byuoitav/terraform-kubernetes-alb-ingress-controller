@@ -21,8 +21,8 @@ data "aws_iam_policy_document" "eks_oidc_assume_role" {
       test     = "StringEquals"
       variable = "${replace(data.aws_eks_cluster.selected.identity.0.oidc.0.issuer, "https://", "")}:sub"
       values = [
-        "system:serviceaccount:${var.k8s_namespace}:${local.alb_ingress_controller_name}",
-        "system:serviceaccount:${var.k8s_namespace}:${local.external_dns_name}"
+        "system:serviceaccount:${var.k8s_namespace}:${local.external_dns_name}",
+        "system:serviceaccount:${var.k8s_namespace}:${local.alb_ingress_controller_name}"
       ]
     }
 
