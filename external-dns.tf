@@ -2,7 +2,7 @@
 resource "aws_iam_role" "external_dns" {
   name                  = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-${local.external_dns_name}"
   description           = "Permissions required by the Kubernetes ExternalDNS pod"
-  path                  = var.aws_iam_path_prefix
+  path                  = local.aws_iam_path_prefix
   force_detach_policies = true
   assume_role_policy    = data.aws_iam_policy_document.eks_oidc_assume_role.json
   tags                  = var.aws_tags
@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "external_dns" {
 resource "aws_iam_policy" "external_dns" {
   name        = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-${local.external_dns_name}"
   description = "Permissions that are required to manage AWS Route53 entries"
-  path        = var.aws_iam_path_prefix
+  path        = local.aws_iam_path_prefix
   policy      = data.aws_iam_policy_document.external_dns.json
 }
 

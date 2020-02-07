@@ -1,4 +1,5 @@
 locals {
+  aws_iam_path_prefix         = var.aws_iam_path_prefix == "" ? null : var.aws_iam_path_prefix
   external_dns_name           = "external-dns"
   alb_ingress_controller_name = "alb-ingress-controller"
 }

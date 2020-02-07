@@ -1,7 +1,7 @@
 resource "aws_iam_role" "alb_ingress_controller" {
   name                  = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-${local.alb_ingress_controller_name}"
   description           = "Permissions required by the Kubernetes AWS ALB Ingress Controller pod."
-  path                  = var.aws_iam_path_prefix
+  path                  = local.aws_iam_path_prefix
   force_detach_policies = true
   assume_role_policy    = data.aws_iam_policy_document.eks_oidc_assume_role.json
   tags                  = var.aws_tags
@@ -124,7 +124,7 @@ data "aws_iam_policy_document" "alb_ingress_controller" {
 resource "aws_iam_policy" "alb_ingress_controller" {
   name        = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-${local.alb_ingress_controller_name}"
   description = "Permissions that are required to manage AWS Application Load Balancers."
-  path        = var.aws_iam_path_prefix
+  path        = local.aws_iam_path_prefix
   policy      = data.aws_iam_policy_document.alb_ingress_controller.json
 }
 
