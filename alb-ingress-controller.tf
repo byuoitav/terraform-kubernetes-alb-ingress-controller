@@ -262,7 +262,7 @@ resource "kubernetes_deployment" "alb_ingress_controller" {
           args = [
             "--ingress-class=alb",
             "--cluster-name=${var.k8s_cluster_name}",
-            "--aws-vpc-id=${data.aws_eks_cluster.selected.0.vpc_config.0.vpc_id}",
+            "--aws-vpc-id=${data.aws_eks_cluster.selected.vpc_config.0.vpc_id}",
             "--aws-region=${data.aws_region.current.name}",
             "--aws-max-retries=10",
           ]
