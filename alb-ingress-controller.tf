@@ -267,11 +267,11 @@ resource "kubernetes_deployment" "alb_ingress_controller" {
             "--aws-max-retries=10",
           ]
 
-          //volume_mount {
-          //  mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
-          //  name       = kubernetes_service_account.this.default_secret_name
-          //  read_only  = true
-          //}
+          volume_mount {
+            mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
+            name       = kubernetes_service_account.alb_ingress_controller.default_secret_name
+            read_only  = true
+          }
 
           port {
             name           = "health"
@@ -304,13 +304,13 @@ resource "kubernetes_deployment" "alb_ingress_controller" {
           }
         }
 
-        //volume {
-        //  name = kubernetes_service_account.this.default_secret_name
+        volume {
+          name = kubernetes_service_account.alb_ingress_controller.default_secret_name
 
-        //  secret {
-        //    secret_name = kubernetes_service_account.this.default_secret_name
-        //  }
-        //}
+          secret {
+            secret_name = kubernetes_service_account.alb_ingress_controller.default_secret_name
+          }
+        }
       }
     }
   }

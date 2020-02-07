@@ -161,6 +161,12 @@ resource "kubernetes_deployment" "external_dns" {
             "--txt-owner-id=${var.aws_resource_name_prefix}${var.k8s_cluster_name}-${var.k8s_namespace}"
           ]
 
+          volume_mount {
+            mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
+            name       = kubernetes_service_account.external_dns.default_secret_name
+            read_only  = true
+          }
+
           port {
             name           = "health"
             container_port = 10254
@@ -189,6 +195,14 @@ resource "kubernetes_deployment" "external_dns" {
             initial_delay_seconds = 60
             period_seconds        = 60
             timeout_seconds       = 3
+          }
+        }
+
+        volume {
+          name = kubernetes_service_account.external_dns.default_secret_name
+
+          secret {
+            secret_name = kubernetes_service_account.external_dns.default_secret_name
           }
         }
       }
