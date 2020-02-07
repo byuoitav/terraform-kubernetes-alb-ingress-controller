@@ -168,15 +168,15 @@ resource "kubernetes_deployment" "external_dns" {
           }
 
           port {
-            name           = "health"
-            container_port = 10254
+            name           = "metrics"
+            container_port = 7979
             protocol       = "TCP"
           }
 
           readiness_probe {
             http_get {
               scheme = "HTTP"
-              port   = "health"
+              port   = "metrics"
               path   = "/healthz"
             }
 
@@ -188,7 +188,7 @@ resource "kubernetes_deployment" "external_dns" {
           liveness_probe {
             http_get {
               scheme = "HTTP"
-              port   = "health"
+              port   = "metrics"
               path   = "/healthz"
             }
 
