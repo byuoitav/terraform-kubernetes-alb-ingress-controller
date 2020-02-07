@@ -4,7 +4,7 @@ resource "aws_iam_role" "external_dns" {
   description           = "Permissions required by the Kubernetes ExternalDNS pod"
   path                  = var.aws_iam_path_prefix
   force_detach_policies = true
-  assume_role_policy    = data.aws_iam_policy_document.eks_oidc_assume_role.0.json
+  assume_role_policy    = data.aws_iam_policy_document.eks_oidc_assume_role.json
   tags                  = var.aws_tags
 }
 

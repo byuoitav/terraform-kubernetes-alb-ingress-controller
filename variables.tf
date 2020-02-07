@@ -12,7 +12,7 @@ variable "k8s_namespace" {
 variable "aws_iam_path_prefix" {
   description = "Prefix to be used for all AWS IAM objects."
   type        = string
-  default     = "/"
+  default     = null
 }
 
 variable "aws_resource_name_prefix" {
