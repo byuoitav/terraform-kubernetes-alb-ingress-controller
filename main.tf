@@ -1,4 +1,8 @@
-// https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md
+locals {
+  external_dns_name           = "external-dns"
+  alb_ingress_controller_name = "alb-ingress-controller"
+}
+
 data "aws_caller_identity" "current" {}
 
 data "aws_eks_cluster" "selected" {
@@ -18,8 +22,8 @@ data "aws_iam_policy_document" "eks_oidc_assume_role" {
       test     = "StringEquals"
       variable = "${replace(data.aws_eks_cluster.selected[0].identity[0].oidc[0].issuer, "https://", "")}:sub"
       values = [
-        "system:serviceaccount:${var.k8s_namespace}:external-dns",
-        "system:serviceaccount:${var.k8s_namespace}:alb-ingress-controller"
+        "system:serviceaccount:${var.k8s_namespace}:${local.alb_ingress_controller_name}",
+        "system:serviceaccount:${var.k8s_namespace}:${local.external_dns_name}"
       ]
     }
 

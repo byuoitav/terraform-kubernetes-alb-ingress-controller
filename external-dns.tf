@@ -1,11 +1,11 @@
 // https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md
 resource "aws_iam_role" "external_dns" {
-  name                  = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-external-dns"
+  name                  = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-${local.external_dns_name}"
   description           = "Permissions required by the Kubernetes ExternalDNS pod"
   path                  = var.aws_iam_path_prefix
-  tags                  = var.aws_tags
   force_detach_policies = true
   assume_role_policy    = data.aws_iam_policy_document.eks_oidc_assume_role.0.json
+  tags                  = var.aws_tags
 }
 
 data "aws_iam_policy_document" "external_dns" {
@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "external_dns" {
 }
 
 resource "aws_iam_policy" "external_dns" {
-  name        = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-external-dns"
+  name        = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-${local.external_dns_name}"
   description = "Permissions that are required to manage AWS Route53 entries"
   path        = var.aws_iam_path_prefix
   policy      = data.aws_iam_policy_document.external_dns.json
@@ -39,7 +39,7 @@ resource "aws_iam_role_policy_attachment" "external_dns" {
 
 resource "kubernetes_service_account" "external_dns" {
   metadata {
-    name      = "external-dns"
+    name      = local.external_dns_name
     namespace = var.k8s_namespace
 
     annotations = {
@@ -47,7 +47,7 @@ resource "kubernetes_service_account" "external_dns" {
     }
 
     labels = {
-      "app.kubernetes.io/name"       = "external-dns"
+      "app.kubernetes.io/name"       = local.external_dns_name
       "app.kubernetes.io/managed-by" = "terraform"
     }
   }
@@ -57,10 +57,10 @@ resource "kubernetes_service_account" "external_dns" {
 
 resource "kubernetes_cluster_role" "external_dns" {
   metadata {
-    name = "external-dns"
+    name = local.external_dns_name
 
     labels = {
-      "app.kubernetes.io/name"       = "external-dns"
+      "app.kubernetes.io/name"       = local.external_dns_name
       "app.kubernetes.io/managed-by" = "terraform"
     }
   }
@@ -92,10 +92,10 @@ resource "kubernetes_cluster_role" "external_dns" {
 
 resource "kubernetes_cluster_role_binding" "external_dns" {
   metadata {
-    name = "external-dns"
+    name = local.external_dns_name
 
     labels = {
-      "app.kubernetes.io/name"       = "external-dns"
+      "app.kubernetes.io/name"       = local.external_dns_name
       "app.kubernetes.io/managed-by" = "terraform"
     }
   }
@@ -117,11 +117,11 @@ resource "kubernetes_deployment" "external_dns" {
   depends_on = [kubernetes_cluster_role_binding.external_dns]
 
   metadata {
-    name      = "external-dns"
+    name      = local.external_dns_name
     namespace = var.k8s_namespace
 
     labels = {
-      "app.kubernetes.io/name"       = "external-dns"
+      "app.kubernetes.io/name"       = local.external_dns_name
       "app.kubernetes.io/version"    = "v${var.external_dns_version}"
       "app.kubernetes.io/managed-by" = "terraform"
     }
@@ -132,14 +132,14 @@ resource "kubernetes_deployment" "external_dns" {
 
     selector {
       match_labels = {
-        "app.kubernetes.io/name" = "external-dns"
+        "app.kubernetes.io/name" = local.external_dns_name
       }
     }
 
     template {
       metadata {
         labels = {
-          "app.kubernetes.io/name"    = "external-dns"
+          "app.kubernetes.io/name"    = local.external_dns_name
           "app.kubernetes.io/version" = "v${var.external_dns_version}"
         }
       }

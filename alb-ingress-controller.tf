@@ -1,10 +1,10 @@
 resource "aws_iam_role" "alb_ingress_controller" {
-  name                  = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-alb-ingress-controller"
+  name                  = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-${local.alb_ingress_controller_name}"
   description           = "Permissions required by the Kubernetes AWS ALB Ingress Controller pod."
   path                  = var.aws_iam_path_prefix
-  tags                  = var.aws_tags
   force_detach_policies = true
   assume_role_policy    = data.aws_iam_policy_document.eks_oidc_assume_role.0.json
+  tags                  = var.aws_tags
 }
 
 data "aws_iam_policy_document" "alb_ingress_controller" {
@@ -122,7 +122,7 @@ data "aws_iam_policy_document" "alb_ingress_controller" {
 }
 
 resource "aws_iam_policy" "alb_ingress_controller" {
-  name        = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-alb-ingress-controller"
+  name        = "${var.aws_resource_name_prefix}${var.k8s_cluster_name}-${local.alb_ingress_controller_name}"
   description = "Permissions that are required to manage AWS Application Load Balancers."
   path        = var.aws_iam_path_prefix
   policy      = data.aws_iam_policy_document.alb_ingress_controller.json
@@ -135,7 +135,7 @@ resource "aws_iam_role_policy_attachment" "alb_ingress_controller" {
 
 resource "kubernetes_service_account" "alb_ingress_controller" {
   metadata {
-    name      = "alb-ingress-controller"
+    name      = local.alb_ingress_controller_name
     namespace = var.k8s_namespace
 
     annotations = {
@@ -143,7 +143,7 @@ resource "kubernetes_service_account" "alb_ingress_controller" {
     }
 
     labels = {
-      "app.kubernetes.io/name"       = "alb-ingress-controller"
+      "app.kubernetes.io/name"       = local.alb_ingress_controller_name
       "app.kubernetes.io/managed-by" = "terraform"
     }
   }
@@ -153,10 +153,10 @@ resource "kubernetes_service_account" "alb_ingress_controller" {
 
 resource "kubernetes_cluster_role" "alb_ingress_controller" {
   metadata {
-    name = "alb-ingress-controller"
+    name = local.alb_ingress_controller_name
 
     labels = {
-      "app.kubernetes.io/name"       = "alb-ingress-controller"
+      "app.kubernetes.io/name"       = local.alb_ingress_controller_name
       "app.kubernetes.io/managed-by" = "terraform"
     }
   }
@@ -196,10 +196,10 @@ resource "kubernetes_cluster_role" "alb_ingress_controller" {
 
 resource "kubernetes_cluster_role_binding" "alb_ingress_controller" {
   metadata {
-    name = "alb-ingress-controller"
+    name = local.alb_ingress_controller_name
 
     labels = {
-      "app.kubernetes.io/name"       = "alb-ingress-controller"
+      "app.kubernetes.io/name"       = local.alb_ingress_controller_name
       "app.kubernetes.io/managed-by" = "terraform"
     }
   }
@@ -221,11 +221,11 @@ resource "kubernetes_deployment" "alb_ingress_controller" {
   depends_on = [kubernetes_cluster_role_binding.alb_ingress_controller]
 
   metadata {
-    name      = "alb-ingress-controller"
+    name      = local.alb_ingress_controller_name
     namespace = var.k8s_namespace
 
     labels = {
-      "app.kubernetes.io/name"       = "alb-ingress-controller"
+      "app.kubernetes.io/name"       = local.alb_ingress_controller_name
       "app.kubernetes.io/version"    = "v${var.alb_ingress_controller_version}"
       "app.kubernetes.io/managed-by" = "terraform"
     }
@@ -236,14 +236,14 @@ resource "kubernetes_deployment" "alb_ingress_controller" {
 
     selector {
       match_labels = {
-        "app.kubernetes.io/name" = "alb-ingress-controller"
+        "app.kubernetes.io/name" = local.alb_ingress_controller_name
       }
     }
 
     template {
       metadata {
         labels = {
-          "app.kubernetes.io/name"    = "alb-ingress-controller"
+          "app.kubernetes.io/name"    = local.alb_ingress_controller_name
           "app.kubernetes.io/version" = "v${var.alb_ingress_controller_version}"
         }
       }
@@ -311,8 +311,6 @@ resource "kubernetes_deployment" "alb_ingress_controller" {
         //    secret_name = kubernetes_service_account.this.default_secret_name
         //  }
         //}
-
-        // termination_grace_period_seconds = 60
       }
     }
   }

@@ -16,7 +16,7 @@ variable "aws_iam_path_prefix" {
 }
 
 variable "aws_resource_name_prefix" {
-  description = "A string to prefix any AWS (not Kubernetes) resources created"
+  description = "A string to prefix any AWS resources created"
   type        = string
   default     = "k8s-"
 }
