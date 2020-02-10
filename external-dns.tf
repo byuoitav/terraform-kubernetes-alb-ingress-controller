@@ -180,7 +180,7 @@ resource "kubernetes_deployment" "external_dns" {
               path   = "/healthz"
             }
 
-            initial_delay_seconds = 30
+            initial_delay_seconds = 45
             period_seconds        = 60
             timeout_seconds       = 3
           }
